@@ -1,10 +1,12 @@
-Averages - weewx extension that calculates monthly averages and generates JSON
-format file suitable for plotting these averages using Highcharts.
+Averages - weewx extension that calculates temperature and rainfall monthly 
+averages and generates JSON format file suitable for plotting these averages 
+using Highcharts.
 
 The Averages extension consists of a weewx Search List Extension (SLE) that
 calculates the monthly averages, a skin that generates JSON format data file
-containing the monthly averages data and an example HTML page that displays a
-monthly averages plot using Highcharts.
+containing the monthly averages data and an example HTML page and supporting 
+javascript that displays a monthly temperature and rainfall averages plot using 
+Highcharts.
 
 
 Pre-Requisites

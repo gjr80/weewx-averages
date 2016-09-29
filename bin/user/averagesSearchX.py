@@ -13,10 +13,10 @@
 # by Highcharts to plot monthly maximum, minimum and mean termperature and
 # rainfall observations.
 #
-# Version: 0.5.0                                   Date: 25 September 2016
+# Version: 0.5.0                                   Date: 30 September 2016
 #
 # Revision History
-#  25 September 2016
+#  30 September 2016
 #      v0.5.0   - now packaged as a weewx extension
 #               - reworked the SLE class:
 #                   - took get_first_day() method out of the SLE class

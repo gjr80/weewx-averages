@@ -11,10 +11,10 @@
 ##                                                                           #
 ## Monthly averages plots JSON data file template                            #
 ##                                                                           #
-## Version: 0.5.0                                    Date: 25 September 2016 #
+## Version: 0.5.0                                    Date: 30 September 2016 #
 ##                                                                           #
 ## Revision History                                                          #
-##  25 September 2016                                                        #
+##  30 September 2016                                                        #
 ##      v0.5.0  - now packaged as a weewx extension                          #
 ##  10 May 2016                                                              #
 ##      v0.4.0  - no change, version number upgrade only                     #
@@ -32,11 +32,11 @@
 ##############################################################################
 [{
 "_version": "averages.json.tmpl version 0.5.0",
-"temperatureplot": {"series": 
-{"outTempMeanMinMax": {"name": "Temperature", "data": $monthTempMeanMinMaxjson}, 
-"outTempMean": {"name": "Mean Temperature", "data": $monthTempMeanjson}, 
+"temperatureplot": {"series":
+{"outTempMeanMinMax": {"name": "Temperature", "data": $monthTempMeanMinMaxjson},
+"outTempMean": {"name": "Mean Temperature", "data": $monthTempMeanjson},
 "outTempMax": {"name": "Maximum Temperature", "data": $monthTempMaxjson},
-"outTempMin": {"name": "Minimum Temperature", "data": $monthTempMinjson}}, 
+"outTempMin": {"name": "Minimum Temperature", "data": $monthTempMinjson}},
 "yAxisLabel": {"text": #slurp
 #if $unit.unit_type_dict.group_temperature == "degree_C"
  "(\u00B0 C)"
@@ -51,8 +51,8 @@
  "\u00B0 F"
 #end if
 }},
-"rainplot": {"series": 
-{"rainAvg": {"name": "Rain", "data": $monthRainAvgjson}}, 
+"rainplot": {"series":
+{"rainAvg": {"name": "Rain", "data": $monthRainAvgjson}},
 "yAxisLabel": {"text": #slurp
 #if $unit.unit_type_dict.group_rain == "mm"
  "(mm)"

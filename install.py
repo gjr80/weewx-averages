@@ -11,10 +11,10 @@
 #
 # Installer for the Averages weewx extension.
 #
-# Version: 0.5.0                                   Date: 29 September 2016
+# Version: 0.5.0                                   Date: 30 September 2016
 #
 # Revision History
-#  29 September 2016
+#  30 September 2016
 #      v0.5.0  - initial implementation (bumped to v0.5.0 to align with
 #                supporting SLE version)
 #

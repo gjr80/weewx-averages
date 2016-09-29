@@ -11,3 +11,5 @@ v0.5.0
         only use complete archive months. Note, any partial months after the 
         first complete month and before the last complete month are still 
         'included'.
+*   added config{} to averages.js allow users to change common look and feel
+    settings without delving into the code.

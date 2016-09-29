@@ -6,41 +6,44 @@
 * Refer to the enclosed License file for your full rights.
 *
 *
-* Javascript code to initialise and render weewx monthly averages plot using 
+* Javascript code to initialise and render weewx monthly averages plot using
 * Highcharts.
-* 
 *
-* Version: 0.5.0                                   Date: 25 September 2016
+*
+* Version: 0.5.0                                   Date: 30 September 2016
 *
 * Revision History
-*  25 September 2016
-*      v0.5.0  - now packaged as a weewx extension
+*  30 September 2016
+*      v0.5.0   - now packaged as a weewx extension
+*               - added config to allow users to change common look and feel
+*                 settings without delving into the code
 *  10 May 2016
-*      v0.4.0  - no change, version number upgrade only
+*      v0.4.0   - no change, version number upgrade only
 *  April 2016
-*      v0.3.0  - no change, version number upgrade only
+*      v0.3.0   - no change, version number upgrade only
 *  5 March 2016
-*      v0.2.2  - no change, version number upgrade only
-*  21 July 2015        
-*      v0.2.1  - remove old redundant code
+*      v0.2.2   - no change, version number upgrade only
+*  21 July 2015
+*      v0.2.1   - remove old redundant code
 *  19 March 2015
-*      v0.2.0  - no change, version number upgrade only
-*  22 February 2015    
-*      v0.1.0  - initial implementation
+*      v0.2.0   - no change, version number upgrade only
+*  22 February 2015
+*      v0.1.0   - initial implementation
 *
 **/
 
 var config = {
     /**
     *
-    * Below are some options the user may wish to tweak to set the look and 
-    * feel of the plot. All control various options detailed in the Highcharts 
+    * Below are some options the user may wish to tweak to set the look and
+    * feel of the plot. All control various options detailed in the Highcharts
     * API Reference.
     *
     **/
-    
+
     json_source: 'json/averages.json',  // path to the JSON file holding the source data
-    title: 'Monthly Temperature and Average Rainfall',  // plot title. String
+    render_to: 'monthaveragesplot'      // id of the HTML element where the chart will be rendered
+    title: 'Monthly Temperature and Rainfall Averages',  // plot title. String
     show_legend: true,                      // display plot legend. true|false
     av_temp_range_label: 'Mean Temp Range', // legend label for mean temperature range plot. String
     av_temp_range_color: '#CC3399',         // color for mean temperature range plot. String, color name or RGB
@@ -55,8 +58,8 @@ var config = {
     avg_rainfall_color: '#72B2C4',          // color for avg rainfall plot. String, color name or RGB
     background_color_stop1: '#FCFFC5',      // 1st color to be used in background gradient. String, color name or RGB
     background_color_stop2: '#E0E0FF',      // 2nd color to be used in background gradient. String, color name or RGB
-    marker_symbol: 'circle',                // marker symbol to be used for each point of each plot. String
-    marker_enabled: false,                  // enable marker symbol for each plot. true|false
+    marker_symbol: 'circle',                // marker symbol to be used for each point of each plot (except rainfall). String
+    marker_enabled: false,                  // enable marker symbol for each plot(except rainfall). true|false
     updated_align: 'right',                 // alignment of 'Updated: ' label. 'right'|'left'
     updated_font_size: '10px',              // font size of 'Updated: ' label. String
     updated_x_offset: -25,                  // x offset of 'Updated: ' label. Number
@@ -78,8 +81,8 @@ var config = {
 
 /**
 *
-* Edit anything below here at your own risk; get it wrong and your plot may not 
-* display and you will need to troubleshoot the JS yourself. All parameters are 
+* Edit anything below here at your own risk; get it wrong and your plot may not
+* display and you will need to troubleshoot the JS yourself. All parameters are
 * as described in the Highcharts API reference.
 *
 **/
@@ -95,10 +98,13 @@ $(document).ready(function() {
                     [1, config.background_color_stop1]
                 ]
             },
-            renderTo: 'monthaveragesplot'
+            renderTo: config.render_to
         },
         legend: {
-            enabled: config.show_legend
+            enabled: config.show_legend,
+            symbolHeight: 12,
+            symbolRadius: 0,
+            symbolWidth: 12,
         },
         plotOptions: {
             areasplinerange: {
@@ -106,7 +112,7 @@ $(document).ready(function() {
                 marker: {
                     enabled: config.marker_enabled,
                     radius: 1,
-                    symbol: config.symbol
+                    symbol: config.marker_symbol
                 },
                 tooltip: {
                     valueSuffix: ''
@@ -114,11 +120,6 @@ $(document).ready(function() {
             },
             column: {
                 borderWidth: 0,
-                marker: {
-                    enabled: config.marker_enabled,
-                    radius: 1,
-                    symbol: config.symbol
-                },
                 tooltip: {
                     valueSuffix: ''
                 },
@@ -128,10 +129,10 @@ $(document).ready(function() {
                 marker: {
                     enabled: config.marker_enabled,
                     radius: 1,
-                    symbol: config.symbol
+                    symbol: config.marker_symbol
                 },
                 tooltip: {
-                    
+
                     valueSuffix: ''
                 },
             },
