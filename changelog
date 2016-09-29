@@ -1,0 +1,13 @@
+v0.5.0
+*   initial implementation (started at v0.5.0 to align with SLE version)
+*   now packaged as a weewx extension
+*   reworked the SLE class:
+    -   took get_first_day() method out of the SLE class
+    -   consolidated SLE getMonthAveragesHighsLows() method into 
+        get_extension_list() method
+    -   reworked algorithm to calculate means, now use BoM definitions. Refer 
+        class comments for details.
+    -   no longer use partial months at start and end of archive for anything, 
+        only use complete archive months. Note, any partial months after the 
+        first complete month and before the last complete month are still 
+        'included'.

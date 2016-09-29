@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- averages-basic.html ­ Updated: 25 September 2016 -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Monthly Averages</title>
+        <link rel="stylesheet" type="text/css" href="weewx.css"/>
+        <style>
+            .plot {
+                margin: 1% 1% 0 1%;
+                padding: 5px;
+                text-align: center;
+                border-top: 1px solid #dcdcdc;
+                border-right: 1px solid #a9a9a9;
+                border-bottom: 1px solid #808080;
+                border-left: 1px solid #a9a9a9;
+                background-color: #fafaff;
+            }
+        </style>
+    </head>
+
+    <body>
+        <noscript>
+            <h2 style="color:red; text-align:center">&gt;&gt;This page requires JavaScript enabling in your browser.&lt;&lt;<br>&gt;&gt;Please enable scripting it to enjoy this page at its best.&lt;&lt;</h2>
+        </noscript>
+        <div class="plot">
+            <div id="monthaveragesplot" style="width:99%; height:435px;"></div>
+        </div>
+        
+        <!-- Included scripts -->
+
+        <!-- CDN hosted JQuery library -->
+        <script src="http://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+        <!-- Highcharts hosted library -->
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/highcharts-more.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        
+        <!-- or if you have JQuery and/or Highcharts hosted locally... -->
+        <!-- <script src="scripts/jquery-1.11.3.min.js"></script> -->
+        <!-- <script src="scripts/highcharts.js"></script> -->
+        <!-- <script src="scripts/highcharts-more.js"></script> -->
+        <!-- <script src="scripts/modules/exporting.js"></script> -->
+
+        <!-- Local scripts -->
+        <script src="scripts/theme.js" type="text/javascript"></script>
+        <script src="scripts/averages.js" type="text/javascript"></script>
+    
+    </body>
+</html>

@@ -1,0 +1,75 @@
+##errorCatcher Echo
+##############################################################################
+##                                                                           #
+## Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>           #
+##                                                                           #
+## Released under GNU General Public License, Version 3, 29 June 2007.       #
+## Refer to the enclosed License file for your full rights.                  #
+##                                                                           #
+##                                                                           #
+## Averages Extension                                                        #
+##                                                                           #
+## Monthly averages plots JSON data file template                            #
+##                                                                           #
+## Version: 0.5.0                                    Date: 25 September 2016 #
+##                                                                           #
+## Revision History                                                          #
+##  25 September 2016                                                        #
+##      v0.5.0  - now packaged as a weewx extension                          #
+##  10 May 2016                                                              #
+##      v0.4.0  - no change, version number upgrade only                     #
+##  April 2016                                                               #
+##      v0.3.0  - no change, version number upgrade only                     #
+##  5 March 2016                                                             #
+##      v0.2.2  - no change, version number upgrade only                     #
+##  21 July 2015                                                             #
+##      v0.2.1  - remove old redundant code                                  #
+##  19 March 2015                                                            #
+##      v0.2.0  - no change, version number upgrade only                     #
+##  22 February 2015                                                         #
+##      v0.1.0  - initial implementation                                     #
+##                                                                           #
+##############################################################################
+[{
+"_version": "averages.json.tmpl version 0.5.0",
+"temperatureplot": {"series": 
+{"outTempMeanMinMax": {"name": "Temperature", "data": $monthTempMeanMinMaxjson}, 
+"outTempMean": {"name": "Mean Temperature", "data": $monthTempMeanjson}, 
+"outTempMax": {"name": "Maximum Temperature", "data": $monthTempMaxjson},
+"outTempMin": {"name": "Minimum Temperature", "data": $monthTempMinjson}}, 
+"yAxisLabel": {"text": #slurp
+#if $unit.unit_type_dict.group_temperature == "degree_C"
+ "(\u00B0 C)"
+#else
+ "(\u00B0 F)"
+#end if
+},
+"yAxisUnits": {"text": #slurp
+#if $unit.unit_type_dict.group_temperature == "degree_C"
+ "\u00B0 C"
+#else
+ "\u00B0 F"
+#end if
+}},
+"rainplot": {"series": 
+{"rainAvg": {"name": "Rain", "data": $monthRainAvgjson}}, 
+"yAxisLabel": {"text": #slurp
+#if $unit.unit_type_dict.group_rain == "mm"
+ "(mm)"
+#elif $unit.unit_type_dict.group_rain == "inch"
+ "(in)"
+#else
+ "(cm)"
+#end if
+},
+"yAxisUnits": {"text": #slurp
+#if $unit.unit_type_dict.group_rain == "mm"
+ "mm"
+#elif $unit.unit_type_dict.group_rain == "inch"
+ "in"
+#else
+ "cm"
+#end if
+}},
+"generated": "$current.dateTime"
+}]
