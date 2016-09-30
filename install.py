@@ -65,6 +65,15 @@ class AveragesInstaller(ExtensionInstaller):
                             'TimeFormats': {
                                 'current': '%-d %B %Y %H:%M'
                             }
+                        },
+                        'CopyGenerator': {
+                            'copy_once': ['scripts/averages.js',
+                                          'scripts/theme.js', 
+                                          'averages.html']
+                        },
+                        'Generators': {
+                            'generator_list': ['weewx.cheetahgenerator.CheetahGenerator', 
+                                               'weewx.reportengine.CopyGenerator']
                         }
                     }
                 }
