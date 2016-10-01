@@ -1,154 +1,28 @@
 # Averages extension for weewx #
 
-The Averages extension for weewx calculates temperature and rainfall monthly averages and generates JSON format file suitable for plotting these averages using Highcharts.
+## Description ##
 
-The Averages extension consists of a weewx Search List Extension (SLE) that calculates the monthly averages, a skin that generates JSON format data file containing the monthly averages data and an example HTML page and supporting 
-javascript that displays a monthly temperature and rainfall averages plot using Highcharts.
+The Averages extension for `weewx` calculates temperature maxima and minima as well as temperature and rainfall  averages for each month and generates a JSON format file suitable for plotting this data using Highcharts. A sample HTML page and the Javascript necessary to render a Highcharts plot of the resulting data are included with the Averages extension.
+
+A sample plot produced using the Averages extension is included below:
+
+![Example monthly temeperature and rainfall avereges plot](https://github.com/gjr80/weewx-averages/blob/master/chart.png)
+
+The Averages extension consists of a `weewx` Search List Extension (SLE) that calculates the monthly aggregates, a skin that generates JSON format data file containing the monthly data and an example HTML page and supporting javascript that displays the monthly temperature and rainfall data on a Highcharts generated graph.
 
 
 ## Pre-Requisites ##
 
-weewx v3.0.0 or greater. weewx 3.6.0 or greater is required if the `report_timing` option is used to control when the monthly averages JSON file is generated.
+The Averages extension requires `weewx v3.0.0` or greater. Some optional features of the Averages extension require `weewx 3.6.0` or greater. Refer to the [User's Guide](https://github.com/gjr80/weewx-averages/wiki/User's-Guide "Averages extension User's Guide").  
 
+## Installation ##
 
-## File Locations ##
+The [Averages extension wiki](https://github.com/gjr80/weewx-averages/wiki "Averages extension wiki") contains installation and customization instructions for the extension.
 
-As weewx file locations vary by system and installation method, the following symbolic names, as per the weewx User's Guide - Installing weewx, are used in these instructions:
+## Support ###
 
-- $BIN_ROOT (Executables)
-- $SKIN_ROOT (Skins and templates)
-- $HTML_ROOT (Web pages and images)
+General support issues may be raised in the Google Groups [weewx-user forum](https://groups.google.com/group/weewx-user "Google Groups weewx-user forum"). 
+ 
+## Licensing ##
 
-Where applicable the nominal location for your system and installation type should be used in place of the symbolic name
-
-
-## Installation Instructions ##
-
-1.  Download the Averages extension from the 'releases' tab on the weewx-averages gitHub site (https://github.com/gjr80/weewx-averages/releases).
-
-1. Run the installer:
-
-	    $ ./wee_extension install=averages-X.Y.Z.tar.gz
-
-    This command assumes the user is currently in the $BIN_ROOT folder.
-
-1.  The units, number and date formats for the generated JSON format data file are set at the  [[HighchartsAverages]] section in the [StdReport] section of weewx.conf. The default settings are:
-
-	    [[HighchartsAverages]]
-	        [[[Units]]]
-	            [[[[Groups]]]]
-	                group_rain         = mm         # Options are 'inch' or 'mm'
-	                group_temperature  = degree_C   # Options are 'degree_F' or 'degree_C'
-	            [[[[StringFormats]]]]
-	                inch = %.2f
-	                mm = %.1f
-	                degree_F = %.1f
-	                cm = %.2f
-	                degree_C = %.1f
-	            [[[[TimeFormats]]]]
-	                current = %-d %B %Y
-
-    If you wish to use different units or formats then you should alter the
-    above settings in weewx.conf. There is no need to change anything in
-    the HighchartsAverages skin files, this should be avoided as any
-    changes made to the HighchartsAverages skin files will be lost if the
-    Averages extension is upgraded.
-
-1.  By default the Averages extension places the generated files in the $HTML_ROOT/json folder, nominally /home/weewx/public_html/json for a setup.py install. If you wish to place the generated files in another directory then
-edit the 'HTML_ROOT' setting under the [[HighchartsAverages]] section in the [StdReport] section of weewx.conf.
-
-1.  As monthly averages are slow changing and given the relatively long time to calculates the averages for for large data sets, the monthly averages JSON format data file is only generated once per day. If weewx 3.6.0a1 or later is installed then the report_timing option will be used to generate the report at midnight each day. If weewx 3.5.0 or earlier is installed then the stale_age option will be used to generate the report every 24 hours. Whatever option is installed, the setting can be changed under the [[HighchartsAverages]] section in the [StdReport] section of weewx.conf.
-
-1.  Restart weewx:
-
-    	$ sudo /etc/init.d/weewx stop
-    	$ sudo /etc/init.d/weewx start
-
-1.  This will result in the monthly averages JSON format data file being generated at either midnight or every 24 hours.
-
-
-## Manual Installation Instructions ##
-
-1.  Download the Averages extension from the 'releases' tab on the weewx-averages gitHub site (https://github.com/gjr80/weewx-averages/releases).
-
-1.  Copy files as follows:
-
-    	$ cp averages/bin/user/*.py $BIN_ROOT/user
-    	$ cp -R averages/skins/* $SKIN_ROOT
-
-1.  In weewx.conf, modify the [StdReport] section by adding the following section:
-
-	    [[HighchartsAverages]]
-	        report_timing = @daily
-	        HTML_ROOT = public_html/json
-	        skin = HighchartsAverages
-	        [[[Units]]]
-	            [[[[Groups]]]]
-	                group_rain         = mm         # Options are 'inch' or 'mm'
-	                group_temperature  = degree_C   # Options are 'degree_F' or 'degree_C'
-	            [[[[StringFormats]]]]
-	                inch = %.2f
-	                mm = %.1f
-	                degree_F = %.1f
-	                cm = %.2f
-	                degree_C = %.1f
-	            [[[[TimeFormats]]]]
-	                current = %-d %B %Y
-
-    If you wish to use different units or formats then you should alter the above settings in weewx.conf. There is no need to change anything in the HighchartsAverages skin files, this should be avoided as any changes made to the HighchartsAverages skin files will be lost if the Averages extension is upgraded.
-
-    If you are using weewx v3.5.0 or earlier the report_timing option is not available and
-
-        report_timing = @daily
-
-    should be replaced with
-
-        stale_age = 86400
-
-    to generate the JSON format data file every 24 hours.
-
-1.  By default the Averages extension places the generated files in the $HTML_ROOT/json folder, nominally /home/weewx/public_html/json for a setup.py install. If you wish to place the generated files in another directory then edit the 'HTML_ROOT' setting under the [[HighchartsAverages]] section in the [StdReport] section of weewx.conf.
-
-1.  As monthly averages are slow changing and given the relatively long time to calculates the averages for for large data sets, the monthly averages JSON format data file is only generated once per day. If weewx 3.6.0a1 or later is installed then the report_timing option will be used to generate the report at midnight each day. If weewx 3.5.0 or earlier is installed then the stale_age option will be used to generate the report every 24 hours. Whatever option is installed, the setting can be changed under the [[HighchartsAverages]] section in the [StdReport] section of weewx.conf.
-
-1.  Restart weewx:
-
-    	$ sudo /etc/init.d/weewx stop
-    	$ sudo /etc/init.d/weewx start
-
-1.  This will result in the monthly averages JSON format data file being generated at either midnight or every 24 hours.
-
-
-## Uninstallation Instructions ##
-
-1.	Stop weewx:
-
-    	$ sudo /etc/init.d/weewx stop
-
-1.	Run the uninstaller
-
-    	$ ./wee_extension uninstall=Averages
-
-    This command assumes the user is currently in the $BIN_ROOT folder.
-
-1.	If required restart weewx:
-
-    	$ sudo /etc/init.d/weewx start
-
-
-## Manual Uninstallation Instructions ##
-
-1.	Stop weewx:
-
-    	$ sudo /etc/init.d/weewx stop
-
-1.	Delete the Averages extension folders and files as follows:
-
-    	$ rm $BIN_ROOT/user/averagesSearchX.py
-    	$ rm -r $SKIN_ROOT/HighchartsAverages
-
-1.	Edit weewx.conf and delete the [StdReport] [[HighchartsAverages]] section.
-
-1.	If required restart weewx:
-
-    	$ sudo /etc/init.d/weewx start
+The Averages extension for weewx is licensed under the GNU Public License v3.
