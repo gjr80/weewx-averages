@@ -34,7 +34,7 @@ class AveragesInstaller(ExtensionInstaller):
         try:
             weewx.require_weewx_version('Averages', '3.6.0')
             _timing = 'report_timing'
-            _timing_setting = '@daily'
+            _timing_setting = '@monthly'
         except weewx.UnsupportedFeature:
             _timing = 'stale_age'
             _timing_setting = '86400'
