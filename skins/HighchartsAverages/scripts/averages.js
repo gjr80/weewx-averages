@@ -42,7 +42,7 @@ var config = {
     **/
 
     json_source: 'json/averages.json',  // path to the JSON file holding the source data
-    render_to: 'monthaveragesplot'      // id of the HTML element where the chart will be rendered
+    render_to: 'monthaveragesplot',      // id of the HTML element where the chart will be rendered
     title: 'Monthly Temperature and Rainfall Averages',  // plot title. String
     show_legend: true,                      // display plot legend. true|false
     av_temp_range_label: 'Mean Temp Range', // legend label for mean temperature range plot. String
