@@ -1,51 +1,54 @@
-#
-# Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>
-#
-# Released under GNU General Public License, Version 3, 29 June 2007.
-# Refer to the enclosed License file for your full rights.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-# details.
-#
-# Search List Extension class to support generation of JSON data file for use
-# by Highcharts to plot monthly maximum, minimum and mean termperature and
-# rainfall observations.
-#
-# Version: 0.5.0                                   Date: 30 September 2016
-#
-# Revision History
-#  30 September 2016
-#      v0.5.0   - now packaged as a weewx extension
-#               - reworked the SLE class:
-#                   - took get_first_day() method out of the SLE class
-#                   - consolidated SLE getMonthAveragesHighsLows() method into
-#                     get_extension_list() method
-#                   - reworked algorithm to calculate means, now use BoM
-#                     definitions. Refer class comments for details.
-#                   - no longer use partial months at start and end of archive
-#                     for anything, only use complete archive months. Note, any
-#                     partial months after the first complete month and before
-#                     the last complete month are still 'included'.
-#  10 May 2016
-#      v0.4.0   - no change, version number upgrade only
-#  April 2016
-#      v0.3.0   - no change, version number upgrade only
-#  5 March 2016
-#      v0.2.2   - fixed bug in that entire months with no records caused
-#                monthAverages to fail
-#  21 July 2015
-#      v0.2.1   - reworked comments
-#               - remove old redundant code
-#  19 March 2015
-#      v0.2.0   - no change, version number upgrade only
-#  22 February 2015
-#      v0.1.0   - initial implementation
-#
+"""averagesSearchX.py
+
+Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>
+
+Released under GNU General Public License, Version 3, 29 June 2007. Refer to the
+enclosed License file for your full rights.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+
+Search List Extension class to support generation of JSON data file for use
+by Highcharts to plot monthly maximum, minimum and mean temperature and
+rainfall observations.
+
+Version: 1.0.0a1                                 Date: 30 December 2019
+
+Revision History
+    30 December 2019    v1.0.0
+        - now WeeWX 4.0.0 compatible under python 2 or python 3
+    30 September 2016   v0.5.0
+        - now packaged as a weewx extension
+        - reworked the SLE class:
+            - took get_first_day() method out of the SLE class
+            - consolidated SLE getMonthAveragesHighsLows() method into
+              get_extension_list() method
+            - reworked algorithm to calculate means, now use BoM definitions. 
+              Refer class comments for details.
+            - no longer use partial months at start and end of archive for
+              anything, only use complete archive months. Note, any partial 
+              months after the first complete month and before the last complete
+              month are still 'included'.
+    10 May 2016         v0.4.0
+       - no change, version number upgrade only
+    April 2016          v0.3.0
+       - no change, version number upgrade only
+    5 March 2016        v0.2.2
+       - fixed bug in that entire months with no records caused monthAverages to
+         fail
+    21 July 2015        v0.2.1
+       - reworked comments
+       - remove old redundant code
+    19 March 2015       v0.2.0
+       - no change, version number upgrade only
+    22 February 2015    v0.1.0
+       - initial implementation
+"""
 import datetime
 import json
-import syslog
+import logging
 import time
 import weewx
 
@@ -54,21 +57,7 @@ from weewx.cheetahgenerator import SearchList
 from weewx.units import getStandardUnitType, ValueTuple
 from weeutil.weeutil import genMonthSpans
 
-def logmsg(level, msg):
-    syslog.syslog(level, 'averagesSearchX: %s' % msg)
-
-def logdbg(msg):
-    logmsg(syslog.LOG_DEBUG, msg)
-
-def logdbg2(msg):
-    if weewx.debug >= 2:
-        logmsg(syslog.LOG_DEBUG, msg)
-
-def loginf(msg):
-    logmsg(syslog.LOG_INFO, msg)
-
-def logerr(msg):
-    logmsg(syslog.LOG_ERR, msg)
+log = logging.getLogger(__name__)
 
 def get_first_day(dt, d_years=0, d_months=0):
     """ Return date object that is the 1st of month containing a given datetime
@@ -96,7 +85,7 @@ def get_first_day(dt, d_years=0, d_months=0):
     # Calculate and return date object
     return date(_y+_a, _m+1, 1)
 
-def roundNone(value, places):
+def round_none(value, places):
     """ Round value to 'places' places but also permit a value of None. """
 
     if value is not None:
@@ -373,12 +362,12 @@ class monthAverages(SearchList):
         mTempMeanMin_vec = self.generator.converter.convert(mTempMeanMin_vt).value
 
         # Round the values in our vectors
-        mRainAvg_vec =  [roundNone(x, rainRound) for x in mRainAvg_vec]
-        mTempMean_vec =  [roundNone(x, tempRound) for x in mTempMean_vec]
-        mTempMax_vec =  [roundNone(x, tempRound) for x in mTempMax_vec]
-        mTempMeanMax_vec =  [roundNone(x, tempRound) for x in mTempMeanMax_vec]
-        mTempMin_vec =  [roundNone(x, tempRound) for x in mTempMin_vec]
-        mTempMeanMin_vec =  [roundNone(x, tempRound) for x in mTempMeanMin_vec]
+        mRainAvg_vec =  [round_none(x, rainRound) for x in mRainAvg_vec]
+        mTempMean_vec =  [round_none(x, tempRound) for x in mTempMean_vec]
+        mTempMax_vec =  [round_none(x, tempRound) for x in mTempMax_vec]
+        mTempMeanMax_vec =  [round_none(x, tempRound) for x in mTempMeanMax_vec]
+        mTempMin_vec =  [round_none(x, tempRound) for x in mTempMin_vec]
+        mTempMeanMin_vec =  [round_none(x, tempRound) for x in mTempMeanMin_vec]
 
         # Format our vectors in json format
         mRainAvg_json = json.dumps(mRainAvg_vec)
@@ -397,6 +386,7 @@ class monthAverages(SearchList):
                    'monthTempMinjson'        : mTempMin_json}
 
         t2 = time.time()
-        logdbg2("monthAverages SLE executed in %0.3f seconds" % (t2 - t1))
+        if weewx.debug >= 2:
+            log.debug("monthAverages SLE executed in %0.3f seconds" % (t2 - t1))
 
         return [_result]
