@@ -59,6 +59,7 @@ from weeutil.weeutil import genMonthSpans
 
 log = logging.getLogger(__name__)
 
+
 def get_first_day(dt, d_years=0, d_months=0):
     """ Return date object that is the 1st of month containing a given datetime
         object.
@@ -78,11 +79,11 @@ def get_first_day(dt, d_years=0, d_months=0):
         Returns a date object for the 1st of the required month.
     """
 
-    # Get year number and month number applying offset as required
+    # get year number and month number applying offset as required
     _y, _m = dt.year + d_years, dt.month + d_months
-    # Calculate actual month number taking into account EOY rollover
+    # calculate actual month number taking into account EOY rollover
     _a, _m = divmod(_m-1, 12)
-    # Calculate and return date object
+    # calculate and return date object
     return date(_y+_a, _m+1, 1)
 
 
@@ -189,203 +190,202 @@ class monthAverages(SearchList):
 
         t1 = time.time()
 
-        # Initialise those things we need to get going
-        # Get archive interval
+        # initialise those things we need to get going
+        # get archive interval
         current_rec = db_lookup().getRecord(timespan.stop)
         _interval = current_rec['interval']
-        # Get our UoMs and Groups
-        (rainUnit, rainGroup) = getStandardUnitType(current_rec['usUnits'],
-                                                    'rain')
-        (tempUnit, tempGroup) = getStandardUnitType(current_rec['usUnits'],
-                                                    'outTemp')
-        # Since we can't use ValueHelpers for rounding of a 'vector' vt get
+        # get our UoMs and Groups
+        (rain_unit, rain_group) = getStandardUnitType(current_rec['usUnits'],
+                                                      'rain')
+        (temp_unit, temp_group) = getStandardUnitType(current_rec['usUnits'],
+                                                      'outTemp')
+        # since we can't use ValueHelpers for rounding of a 'vector' vt get
         # the number of decimal places to use for rounding temp and rain
-        tempRound = int(self.generator.skin_dict['Units']['StringFormats'].get(tempGroup, "1f")[-2])
-        rainRound = int(self.generator.skin_dict['Units']['StringFormats'].get(rainGroup, "1f")[-2])
+        temp_round = int(self.generator.skin_dict['Units']['StringFormats'].get(temp_group, "1f")[-2])
+        rain_round = int(self.generator.skin_dict['Units']['StringFormats'].get(rain_group, "1f")[-2])
         # Set up ValueTuples to hold our results, but in this case the 'value'
         # part of the vt will be a 12 element list ie (jan ... dec). We already
         # know the units but not the values so initialise each months value to
         # None.
-        mRainAvg_vt = ValueTuple([None for x in range(12)], rainUnit, rainGroup)
-        mTempMean_vt = ValueTuple([None for x in range(12)], tempUnit, tempGroup)
-        mTempMax_vt = ValueTuple([None for x in range(12)], tempUnit, tempGroup)
-        mTempMeanMax_vt = ValueTuple([None for x in range(12)], tempUnit, tempGroup)
-        mTempMin_vt = ValueTuple([None for x in range(12)], tempUnit, tempGroup)
-        mTempMeanMin_vt = ValueTuple([None for x in range(12)], tempUnit, tempGroup)
-        # Set up some 2D lists to hold our month running totals and number of
+        m_rain_avg_vt = ValueTuple([None for x in range(12)], rain_unit, rain_group)
+        m_temp_mean_vt = ValueTuple([None for x in range(12)], temp_unit, temp_group)
+        m_temp_max_vt = ValueTuple([None for x in range(12)], temp_unit, temp_group)
+        m_temp_mean_max_vt = ValueTuple([None for x in range(12)], temp_unit, temp_group)
+        m_temp_min_vt = ValueTuple([None for x in range(12)], temp_unit, temp_group)
+        m_temp_mean_min_vt = ValueTuple([None for x in range(12)], temp_unit, temp_group)
+        # set up some 2D lists to hold our month running totals and number of
         # years so we can calculate an average
-        # mXxxxBin[0..11][0..1] - [0..11] - holds data for jan .. dec
-        #                       - [0..1]  - [0] holds running total for Xxxx
-        #                                 - [1] holds number of years of data
-        #                                       added to running total
-        mRainBin = [[0 for x in range(2)] for x in range(12)]
-        mTempMeanMaxBin = [[None for x in range(2)] for x in range(12)]
-        mTempMeanMinBin = [[None for x in range(2)] for x in range(12)]
-        mTempMeanBin = [[None for x in range(2)] for x in range(12)]
-        # End of initialisation
+        # m_xxxx_bin[0..11][0..1] - [0..11] - holds data for jan .. dec
+        #                         - [0..1]  - [0] holds running total for Xxxx
+        #                                   - [1] holds number of years of data
+        #                                         added to running total
+        m_rain_bin = [[0 for x in range(2)] for x in range(12)]
+        m_temp_mean_max_bin = [[None for x in range(2)] for x in range(12)]
+        m_temp_mean_min_bin = [[None for x in range(2)] for x in range(12)]
+        m_temp_mean_bin = [[None for x in range(2)] for x in range(12)]
+        # end of initialisation
 
-        # Get timestamp, month and year for our first (earliest) record
+        # get timestamp, month and year for our first (earliest) record
         _start_ts = db_lookup().firstGoodStamp()
         _start_month = date.fromtimestamp(_start_ts).month
         _start_year = date.fromtimestamp(_start_ts).year
-        # Get timestamp, month and year for our last (most recent) record
+        # get timestamp, month and year for our last (most recent) record
         _end_ts = timespan.stop
         _end_month = date.fromtimestamp(_end_ts).month
         _end_year = date.fromtimestamp(_end_ts).year
-        # Loop through each month timespan between our start and end timestamps
+        # loop through each month timespan between our start and end timestamps
         for m_tspan in genMonthSpans(_start_ts, _end_ts):
-            # Skip any partial months at the start or end of our data
+            # skip any partial months at the start or end of our data
             if m_tspan.start + _interval * 60 < _start_ts or m_tspan.stop > _end_ts:
                 # our span includes only part of a month
                 continue
-            # Work out the month bin number
+            # work out the month bin number
             _bin = datetime.datetime.fromtimestamp(m_tspan.start).month - 1
-            # Get the total rain for the month concerned
-            _rainSum_vt = db_lookup().getAggregate(m_tspan,
-                                                   'rain',
-                                                   'sum')
-            # Get the max temp for the month concerned
-            _tempMax_vt = db_lookup().getAggregate(m_tspan,
-                                                   'outTemp',
-                                                   'max')
-            # Get the avg max temp for the month concerned
-            _tempMeanMax_vt = db_lookup().getAggregate(m_tspan,
-                                                      'outTemp',
-                                                      'meanmax')
-            # Get the min temp for the month concerned
-            _tempMin_vt = db_lookup().getAggregate(m_tspan,
-                                                   'outTemp',
-                                                   'min')
-            # Get the avg min temp for the month concerned
-            _tempMeanMin_vt = db_lookup().getAggregate(m_tspan,
-                                                      'outTemp',
-                                                      'meanmin')
-            # We have the raw data now update our bins for avgs and results for
+            # get the total rain for the month concerned
+            _rain_sum_vt = db_lookup().getAggregate(m_tspan,
+                                                    'rain',
+                                                    'sum')
+            # get the max temp for the month concerned
+            _temp_max_vt = db_lookup().getAggregate(m_tspan,
+                                                    'outTemp',
+                                                    'max')
+            # get the avg max temp for the month concerned
+            _temp_mean_max_vt = db_lookup().getAggregate(m_tspan,
+                                                         'outTemp',
+                                                         'meanmax')
+            # get the min temp for the month concerned
+            _temp_min_vt = db_lookup().getAggregate(m_tspan,
+                                                    'outTemp',
+                                                    'min')
+            # get the avg min temp for the month concerned
+            _temp_mean_min_vt = db_lookup().getAggregate(m_tspan,
+                                                         'outTemp',
+                                                         'meanmin')
+            # we have the raw data now update our bins for avgs and results for
             # max/min
 
-            # Avg rainfall
+            # avg rainfall
             # Add the month rainfall to the bin and increment the year counter.
             # Be careful of None values
-            if _rainSum_vt.value is not None:
-                mRainBin[_bin][0] += _rainSum_vt.value
-                mRainBin[_bin][1] += 1
+            if _rain_sum_vt.value is not None:
+                m_rain_bin[_bin][0] += _rain_sum_vt.value
+                m_rain_bin[_bin][1] += 1
 
-            # Mean temp
+            # mean temp
             # If our bin already has data for this month then add the daily mean
             # and increment the year counter. Otherwise set the value for this
             # bin to the daily mean and set the year counter to 1
-            if _tempMeanMax_vt.value is not None and _tempMeanMin_vt.value is not None:
-                if mTempMeanBin[_bin][0]:
-                    mTempMeanBin[_bin][0] += (_tempMeanMax_vt.value + _tempMeanMin_vt.value)/2
-                    mTempMeanBin[_bin][1] += 1
+            if _temp_mean_max_vt.value is not None and _temp_mean_min_vt.value is not None:
+                if m_temp_mean_bin[_bin][0]:
+                    m_temp_mean_bin[_bin][0] += (_temp_mean_max_vt.value + _temp_mean_min_vt.value)/2
+                    m_temp_mean_bin[_bin][1] += 1
                 else:
-                    mTempMeanBin[_bin][0] = (_tempMeanMax_vt.value + _tempMeanMin_vt.value)/2
-                    mTempMeanBin[_bin][1] = 1
+                    m_temp_mean_bin[_bin][0] = (_temp_mean_max_vt.value + _temp_mean_min_vt.value)/2
+                    m_temp_mean_bin[_bin][1] = 1
 
-            # Max temp
-            # If the current value is greater than our max to date for this
+            # max temp
+            # if the current value is greater than our max to date for this
             # month then we have a new max
-            if _tempMax_vt.value > mTempMax_vt[0][_bin]:
-                mTempMax_vt[0][_bin] = _tempMax_vt.value
+            if _temp_max_vt.value > m_temp_max_vt[0][_bin]:
+                m_temp_max_vt[0][_bin] = _temp_max_vt.value
 
-            # Mean max temp
+            # mean max temp
             # If our bin already has data for this month then add the daily
             # mean max and increment the year counter. Otherwise set the value
             # for this bin to the daily mean max and set the year counter to 1
-            if _tempMeanMax_vt.value is not None:
-                if mTempMeanMaxBin[_bin][0]:
-                    mTempMeanMaxBin[_bin][0] += _tempMeanMax_vt.value
-                    mTempMeanMaxBin[_bin][1] += 1
+            if _temp_mean_max_vt.value is not None:
+                if m_temp_mean_max_bin[_bin][0]:
+                    m_temp_mean_max_bin[_bin][0] += _temp_mean_max_vt.value
+                    m_temp_mean_max_bin[_bin][1] += 1
                 else:
-                    mTempMeanMaxBin[_bin][0] = _tempMeanMax_vt.value
-                    mTempMeanMaxBin[_bin][1] = 1
+                    m_temp_mean_max_bin[_bin][0] = _temp_mean_max_vt.value
+                    m_temp_mean_max_bin[_bin][1] = 1
 
-            # Min temp
+            # min temp
             # If the current value is less than our min to date for this month
             # then we have a new min. Watch out for None though.
-            if mTempMin_vt[0][_bin] is None or (_tempMin_vt.value is not None and _tempMin_vt.value < mTempMin_vt[0][_bin]):
-                mTempMin_vt[0][_bin] = _tempMin_vt.value
+            if m_temp_min_vt[0][_bin] is None or (_temp_min_vt.value is not None and _temp_min_vt.value < m_temp_min_vt[0][_bin]):
+                m_temp_min_vt[0][_bin] = _temp_min_vt.value
 
-            # Mean min temp
+            # mean min temp
             # If our bin already has data for this month then add the daily
             # mean min and increment the year counter. Otherwise set the value
             # for this bin to the daily mean min and set the year counter to 1
-            if _tempMeanMin_vt.value is not None:
-                if mTempMeanMinBin[_bin][0]:
-                    mTempMeanMinBin[_bin][0] += _tempMeanMin_vt.value
-                    mTempMeanMinBin[_bin][1] += 1
+            if _temp_mean_min_vt.value is not None:
+                if m_temp_mean_min_bin[_bin][0]:
+                    m_temp_mean_min_bin[_bin][0] += _temp_mean_min_vt.value
+                    m_temp_mean_min_bin[_bin][1] += 1
                 else:
-                    mTempMeanMinBin[_bin][0] = _tempMeanMin_vt.value
-                    mTempMeanMinBin[_bin][1] = 1
+                    m_temp_mean_min_bin[_bin][0] = _temp_mean_min_vt.value
+                    m_temp_mean_min_bin[_bin][1] = 1
 
-        # We have pre-processed all the raw data now calculate the required
+        # we have pre-processed all the raw data now calculate the required
         # averages for each month and put them in their 'vector' vt.
-        for _mNum in range (12):
-            # Avg rainfall
-            # If we have 1 or more years of data then calc a simple average
-            if mRainBin[_mNum][1] > 0:
-                mRainAvg_vt[0][_mNum] = mRainBin[_mNum][0] / mRainBin[_mNum][1]
-            # Otherwise we have no years of data so set our average to None
+        for _m_num in range(12):
+            # avg rainfall
+            # if we have 1 or more years of data then calc a simple average
+            if m_rain_bin[_m_num][1] > 0:
+                m_rain_avg_vt[0][_m_num] = m_rain_bin[_m_num][0] / m_rain_bin[_m_num][1]
+            # otherwise we have no years of data so set our average to None
             else:
-                mRainAvg_vt[0][_mNum] = None
+                m_rain_avg_vt[0][_m_num] = None
 
-            # Mean temp
-            # If we have a total > 0 then calc a simple average
-            if mTempMeanBin[_mNum][1] > 0:
-                mTempMean_vt[0][_mNum] = mTempMeanBin[_mNum][0] / mTempMeanBin[_mNum][1]
-            # Otherwise we have no years of data so set our average to None
+            # mean temp
+            # if we have a total > 0 then calc a simple average
+            if m_temp_mean_bin[_m_num][1] > 0:
+                m_temp_mean_vt[0][_m_num] = m_temp_mean_bin[_m_num][0] / m_temp_mean_bin[_m_num][1]
+            # otherwise we have no years of data so set our average to None
             else:
-                mTempMean_vt[0][_mNum] = None
+                m_temp_mean_vt[0][_m_num] = None
 
-            # Mean max temp
-            # If we have a total > 0 then calc a simple average
-            if mTempMeanMaxBin[_mNum][1] > 0:
-                mTempMeanMax_vt[0][_mNum] = mTempMeanMaxBin[_mNum][0] / mTempMeanMaxBin[_mNum][1]
-            # Otherwise we have no years of data so set our average to None
+            # mean max temp
+            # if we have a total > 0 then calc a simple average
+            if m_temp_mean_max_bin[_m_num][1] > 0:
+                m_temp_mean_max_vt[0][_m_num] = m_temp_mean_max_bin[_m_num][0] / m_temp_mean_max_bin[_m_num][1]
+            # otherwise we have no years of data so set our average to None
             else:
-                mTempMeanMax_vt[0][_mNum] = None
+                m_temp_mean_max_vt[0][_m_num] = None
 
-            # Mean min temp
-            # If we have a total > 0 then calc a simple average
-            if mTempMeanMinBin[_mNum][1] > 0:
-                mTempMeanMin_vt[0][_mNum] = mTempMeanMinBin[_mNum][0] / mTempMeanMinBin[_mNum][1]
-            # Otherwise we have no years of data so set our average to None
+            # mean min temp
+            # if we have a total > 0 then calc a simple average
+            if m_temp_mean_min_bin[_m_num][1] > 0:
+                m_temp_mean_min_vt[0][_m_num] = m_temp_mean_min_bin[_m_num][0] / m_temp_mean_min_bin[_m_num][1]
+            # otherwise we have no years of data so set our average to None
             else:
-                mTempMeanMin_vt[0][_mNum] = None
+                m_temp_mean_min_vt[0][_m_num] = None
 
-
-        # Convert to the required units and extract the converted values into
+        # convert to the required units and extract the converted values into
         # a vector
-        mRainAvg_vec = self.generator.converter.convert(mRainAvg_vt).value
-        mTempMean_vec = self.generator.converter.convert(mTempMean_vt).value
-        mTempMax_vec = self.generator.converter.convert(mTempMax_vt).value
-        mTempMeanMax_vec = self.generator.converter.convert(mTempMeanMax_vt).value
-        mTempMin_vec = self.generator.converter.convert(mTempMin_vt).value
-        mTempMeanMin_vec = self.generator.converter.convert(mTempMeanMin_vt).value
+        m_rain_avg_vec = self.generator.converter.convert(m_rain_avg_vt).value
+        m_temp_mean_vec = self.generator.converter.convert(m_temp_mean_vt).value
+        m_temp_max_vec = self.generator.converter.convert(m_temp_max_vt).value
+        m_temp_mean_max_vec = self.generator.converter.convert(m_temp_mean_max_vt).value
+        m_temp_min_vec = self.generator.converter.convert(m_temp_min_vt).value
+        m_temp_mean_min_vec = self.generator.converter.convert(m_temp_mean_min_vt).value
 
-        # Round the values in our vectors
-        mRainAvg_vec =  [round_none(x, rainRound) for x in mRainAvg_vec]
-        mTempMean_vec =  [round_none(x, tempRound) for x in mTempMean_vec]
-        mTempMax_vec =  [round_none(x, tempRound) for x in mTempMax_vec]
-        mTempMeanMax_vec =  [round_none(x, tempRound) for x in mTempMeanMax_vec]
-        mTempMin_vec =  [round_none(x, tempRound) for x in mTempMin_vec]
-        mTempMeanMin_vec =  [round_none(x, tempRound) for x in mTempMeanMin_vec]
+        # round the values in our vectors
+        m_rain_avg_vec = [round_none(x, rain_round) for x in m_rain_avg_vec]
+        m_temp_mean_vec = [round_none(x, temp_round) for x in m_temp_mean_vec]
+        m_temp_max_vec = [round_none(x, temp_round) for x in m_temp_max_vec]
+        m_temp_mean_max_vec = [round_none(x, temp_round) for x in m_temp_mean_max_vec]
+        m_temp_min_vec = [round_none(x, temp_round) for x in m_temp_min_vec]
+        m_temp_mean_min_vec = [round_none(x, temp_round) for x in m_temp_mean_min_vec]
 
-        # Format our vectors in json format
-        mRainAvg_json = json.dumps(mRainAvg_vec)
-        mTempMean_json = json.dumps(mTempMean_vec)
-        mTempMax_json = json.dumps(mTempMax_vec)
-        # monthTempMeanMinMax is vector of 2 way tuples, each tuple is (min, max)
-        mTempMeanMinMax_json = json.dumps(list(zip(mTempMeanMin_vec,
-                                              mTempMeanMax_vec)))
-        mTempMin_json = json.dumps(mTempMin_vec)
+        # format our vectors in json format
+        m_rain_avg_json = json.dumps(m_rain_avg_vec)
+        m_temp_mean_json = json.dumps(m_temp_mean_vec)
+        m_temp_max_json = json.dumps(m_temp_max_vec)
+        # month_temp_mean_min_max is vector of 2 way tuples, each tuple is (min, max)
+        m_temp_mean_min_max_json = json.dumps(list(zip(m_temp_mean_min_vec,
+                                              m_temp_mean_max_vec)))
+        m_temp_min_json = json.dumps(m_temp_min_vec)
 
-        # Create a dictionary with the tag names (keys) we want to use
-        _result = {'monthRainAvgjson'        : mRainAvg_json,
-                   'monthTempMeanjson'       : mTempMean_json,
-                   'monthTempMaxjson'        : mTempMax_json,
-                   'monthTempMeanMinMaxjson' : mTempMeanMinMax_json,
-                   'monthTempMinjson'        : mTempMin_json}
+        # create a dictionary with the tag names (keys) we want to use
+        _result = {'monthRainAvgjson': m_rain_avg_json,
+                   'monthTempMeanjson': m_temp_mean_json,
+                   'monthTempMaxjson': m_temp_max_json,
+                   'monthTempMeanMinMaxjson': m_temp_mean_min_max_json,
+                   'monthTempMinjson': m_temp_min_json}
 
         t2 = time.time()
         if weewx.debug >= 2:
