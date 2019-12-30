@@ -85,15 +85,17 @@ def get_first_day(dt, d_years=0, d_months=0):
     # Calculate and return date object
     return date(_y+_a, _m+1, 1)
 
+
 def round_none(value, places):
     """ Round value to 'places' places but also permit a value of None. """
 
     if value is not None:
         try:
             value = round(value, places)
-        except Exception, e:
+        except:
             value = None
     return value
+
 
 class monthAverages(SearchList):
 
@@ -374,8 +376,8 @@ class monthAverages(SearchList):
         mTempMean_json = json.dumps(mTempMean_vec)
         mTempMax_json = json.dumps(mTempMax_vec)
         # monthTempMeanMinMax is vector of 2 way tuples, each tuple is (min, max)
-        mTempMeanMinMax_json = json.dumps(zip(mTempMeanMin_vec,
-                                              mTempMeanMax_vec))
+        mTempMeanMinMax_json = json.dumps(list(zip(mTempMeanMin_vec,
+                                              mTempMeanMax_vec)))
         mTempMin_json = json.dumps(mTempMin_vec)
 
         # Create a dictionary with the tag names (keys) we want to use
