@@ -15,6 +15,8 @@ Version: 1.0.0a1                                   Date: 30 December 2019
 
 Revision History
     30 December 2019
+        - removed code that used either report_timing or stale_age depending on
+          WeeWX version
     30 September 2016   v0.5.0
         - initial implementation (bumped to v0.5.0 to align with supporting
           SLE version)
@@ -41,9 +43,9 @@ class AveragesInstaller(ExtensionInstaller):
                                                                  weewx.__version__)
             raise weewx.UnsupportedFeature(msg)
         super(AveragesInstaller, self).__init__(
-            version="0.5.0",
+            version="1.0.0a1",
             name='Averages',
-            description='Highcharts plots of weewx monthly averages.',
+            description='Highcharts plots of WeeWX monthly averages.',
             author="Gary Roderick",
             author_email="gjroderick(at)gmail.com",
             config={
