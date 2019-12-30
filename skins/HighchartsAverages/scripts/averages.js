@@ -1,34 +1,36 @@
 /**
 *
-* Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>
+* Copyright (c) 2015-2019 Gary Roderick <gjroderick(at)gmail.com>
 *
 * Released under GNU General Public License, Version 3, 29 June 2007.
 * Refer to the enclosed License file for your full rights.
 *
 *
-* Javascript code to initialise and render weewx monthly averages plot using
+* Javascript code to initialise and render WeeWX monthly averages plot using
 * Highcharts.
 *
 *
-* Version: 0.5.0                                   Date: 30 September 2016
+* Version: 1.0.0a1                                 Date: 30 December 2019
 *
 * Revision History
-*  30 September 2016
-*      v0.5.0   - now packaged as a weewx extension
-*               - added config to allow users to change common look and feel
-*                 settings without delving into the code
-*  10 May 2016
-*      v0.4.0   - no change, version number upgrade only
-*  April 2016
-*      v0.3.0   - no change, version number upgrade only
-*  5 March 2016
-*      v0.2.2   - no change, version number upgrade only
-*  21 July 2015
-*      v0.2.1   - remove old redundant code
-*  19 March 2015
-*      v0.2.0   - no change, version number upgrade only
-*  22 February 2015
-*      v0.1.0   - initial implementation
+*   30 December 2019    v1.0.0
+*       - version number change only
+*   30 September 2016   v0.5.0
+*       - now packaged as a weewx extension
+*       - added config to allow users to change common look and feel
+*         settings without delving into the code
+*  10 May 2016          v0.4.0
+*       - no change, version number upgrade only
+*  April 2016           v0.3.0
+*       - no change, version number upgrade only
+*  5 March 2016         v0.2.2
+*       - no change, version number upgrade only
+*  21 July 2015         v0.2.1
+*       - remove old redundant code
+*  19 March 2015        v0.2.0
+*       - no change, version number upgrade only
+*  22 February 2015     v0.1.0
+*       - initial implementation
 *
 **/
 
