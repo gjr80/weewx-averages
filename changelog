@@ -1,3 +1,5 @@
+v1.0.0
+*   compatible with WeeWX 4.0.0 under python 2 or python 3
 v0.5.0
 *   initial implementation (started at v0.5.0 to align with SLE version)
 *   now packaged as a weewx extension

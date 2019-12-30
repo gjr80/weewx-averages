@@ -1,44 +1,45 @@
-#
-# Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>
-#
-# Released under GNU General Public License, Version 3, 29 June 2007.
-# Refer to the enclosed License file for your full rights.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-# details.
-#
-# Installer for the Averages weewx extension.
-#
-# Version: 0.5.0                                   Date: 30 September 2016
-#
-# Revision History
-#  30 September 2016
-#      v0.5.0  - initial implementation (bumped to v0.5.0 to align with
-#                supporting SLE version)
-#
+"""install.py
+Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>
+
+Released under GNU General Public License, Version 3, 29 June 2007.
+Refer to the enclosed License file for your full rights.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details.
+
+Installer for the WeeWX Averages extension.
+
+Version: 1.0.0a1                                   Date: 30 December 2019
+
+Revision History
+    30 December 2019
+    30 September 2016   v0.5.0
+        - initial implementation (bumped to v0.5.0 to align with supporting
+          SLE version)
+"""
 import weewx
+
+from distutils.version import StrictVersion
 from setup import ExtensionInstaller
+
+# TODO. Fix before release
+REQUIRED_VERSION = "4.0.0b5"
+AFW_VERSION = "1.0.0"
+
 
 def loader():
     return AveragesInstaller()
 
+
 class AveragesInstaller(ExtensionInstaller):
     def __init__(self):
-
-        # If our weewx version is > 3.6.0a1 then we can use report_timing to
-        # control when the report is generated otherwise we can only use
-        # stale_age. Call weewx.require_weewx_version(); if no error use
-        # report_timing, if an error then catch it and use stale_age
-        try:
-            weewx.require_weewx_version('Averages', '3.6.0')
-            _timing = 'report_timing'
-            _timing_setting = '@monthly'
-        except weewx.UnsupportedFeature:
-            _timing = 'stale_age'
-            _timing_setting = '86400'
-
+        if StrictVersion(weewx.__version__) < StrictVersion(REQUIRED_VERSION):
+            msg = "%s requires WeeWX %s or greater, found %s" % ('Averages ' + AFW_VERSION,
+                                                                 REQUIRED_VERSION,
+                                                                 weewx.__version__)
+            raise weewx.UnsupportedFeature(msg)
         super(AveragesInstaller, self).__init__(
             version="0.5.0",
             name='Averages',
@@ -49,7 +50,7 @@ class AveragesInstaller(ExtensionInstaller):
                 'StdReport': {
                     'HighchartsAverages': {
                         'skin': 'HighchartsAverages',
-                        _timing: _timing_setting,
+                        'report_timing': '@monthly',
                         'Units': {
                             'Groups': {
                                 'group_rain':        'mm',
@@ -84,5 +85,5 @@ class AveragesInstaller(ExtensionInstaller):
                    ('skins/HighchartsAverages/json',    ['skins/HighchartsAverages/json/averages.json.tmpl']),
                    ('skins/HighchartsAverages/scripts', ['skins/HighchartsAverages/scripts/averages.js',
                                                          'skins/HighchartsAverages/scripts/theme.js'])
-            ]
+                   ]
         )
