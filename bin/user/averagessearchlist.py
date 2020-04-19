@@ -1,24 +1,29 @@
-"""averagesSearchX.py
+"""
+averagesSearchX.py
 
-Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>
+A WeeWX Search List Extension to used to calculate monthly maximum, minimum and
+mean temperature and rainfall observations.
 
-Released under GNU General Public License, Version 3, 29 June 2007. Refer to the
-enclosed License file for your full rights.
+Copyright (c) 2015-2020 Gary Roderick               gjroderick<at>gmail.com
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
+You should have received a copy of the GNU General Public License along with
+this program.  If not, see http://www.gnu.org/licenses/.
 
-Search List Extension class to support generation of JSON data file for use
-by Highcharts to plot monthly maximum, minimum and mean temperature and
-rainfall observations.
-
-Version: 1.0.0a1                                 Date: 30 December 2019
+Version: 1.0.0b1                                 Date: 19 April 2020
 
 Revision History
-    30 December 2019    v1.0.0
-        - now WeeWX 4.0.0 compatible under python 2 or python 3
+    19 April 2020       v1.0.0
+        - now WeeWX 3 and WeeWX 4 (python 2 or 3) compatible
+        - renamed search list file and search list class
     30 September 2016   v0.5.0
         - now packaged as a weewx extension
         - reworked the SLE class:
@@ -36,7 +41,7 @@ Revision History
     April 2016          v0.3.0
        - no change, version number upgrade only
     5 March 2016        v0.2.2
-       - fixed bug in that entire months with no records caused monthAverages to
+       - fixed bug in that entire months with no records caused MonthAverages to
          fail
     21 July 2015        v0.2.1
        - reworked comments
@@ -48,7 +53,6 @@ Revision History
 """
 import datetime
 import json
-import logging
 import time
 import weewx
 
@@ -57,7 +61,25 @@ from weewx.cheetahgenerator import SearchList
 from weewx.units import getStandardUnitType, ValueTuple
 from weeutil.weeutil import genMonthSpans
 
-log = logging.getLogger(__name__)
+# import/setup logging, WeeWX v3 is syslog based but WeeWX v4 is logging based,
+# try v4 logging and if it fails use v3 logging
+try:
+    # WeeWX4 logging
+    import logging
+    log = logging.getLogger(__name__)
+
+    def logdbg(msg):
+        log.debug(msg)
+
+except ImportError:
+    # WeeWX legacy (v3) logging via syslog
+    import syslog
+
+    def logmsg(level, msg):
+        syslog.syslog(level, 'averagessearchlist: %s' % msg)
+
+    def logdbg(msg):
+        logmsg(syslog.LOG_DEBUG, msg)
 
 
 def get_first_day(dt, d_years=0, d_months=0):
@@ -98,7 +120,7 @@ def round_none(value, places):
     return value
 
 
-class monthAverages(SearchList):
+class MonthAverages(SearchList):
 
     def __init__(self, generator):
         SearchList.__init__(self, generator)
@@ -389,6 +411,6 @@ class monthAverages(SearchList):
 
         t2 = time.time()
         if weewx.debug >= 2:
-            log.debug("monthAverages SLE executed in %0.3f seconds" % (t2 - t1))
+            logdbg("MonthAverages SLE executed in %0.3f seconds" % (t2 - t1))
 
         return [_result]
