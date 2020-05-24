@@ -94,7 +94,7 @@ class AveragesInstaller(ExtensionInstaller):
                     }
                 }
             },
-            files=[('bin/user',                         ['bin/user/averagesSearchX.py']),
+            files=[('bin/user',                         ['bin/user/averagessearchlist.py']),
                    ('skins/HighchartsAverages',         ['skins/HighchartsAverages/averages.html',
                                                          'skins/HighchartsAverages/skin.conf']),
                    ('skins/HighchartsAverages/json',    ['skins/HighchartsAverages/json/averages.json.tmpl']),
