@@ -346,7 +346,7 @@ class MonthAverages(SearchList):
         for _m_num in range(12):
             # avg rainfall
             # if we have 1 or more years of data then calc a simple average
-            if m_rain_bin[_m_num][1] > 0:
+            if m_rain_bin[_m_num][1] is not None and m_rain_bin[_m_num][1] > 0:
                 m_rain_avg_vt[0][_m_num] = m_rain_bin[_m_num][0] / m_rain_bin[_m_num][1]
             # otherwise we have no years of data so set our average to None
             else:
@@ -354,7 +354,7 @@ class MonthAverages(SearchList):
 
             # mean temp
             # if we have a total > 0 then calc a simple average
-            if m_temp_mean_bin[_m_num][1] > 0:
+            if m_temp_mean_bin[_m_num][1] is not None and m_temp_mean_bin[_m_num][1] > 0:
                 m_temp_mean_vt[0][_m_num] = m_temp_mean_bin[_m_num][0] / m_temp_mean_bin[_m_num][1]
             # otherwise we have no years of data so set our average to None
             else:
@@ -362,7 +362,7 @@ class MonthAverages(SearchList):
 
             # mean max temp
             # if we have a total > 0 then calc a simple average
-            if m_temp_mean_max_bin[_m_num][1] > 0:
+            if m_temp_mean_max_bin[_m_num][1] is not None and m_temp_mean_max_bin[_m_num][1] > 0:
                 m_temp_mean_max_vt[0][_m_num] = m_temp_mean_max_bin[_m_num][0] / m_temp_mean_max_bin[_m_num][1]
             # otherwise we have no years of data so set our average to None
             else:
@@ -370,7 +370,7 @@ class MonthAverages(SearchList):
 
             # mean min temp
             # if we have a total > 0 then calc a simple average
-            if m_temp_mean_min_bin[_m_num][1] > 0:
+            if m_temp_mean_min_bin[_m_num][1] is not None and m_temp_mean_min_bin[_m_num][1] > 0:
                 m_temp_mean_min_vt[0][_m_num] = m_temp_mean_min_bin[_m_num][0] / m_temp_mean_min_bin[_m_num][1]
             # otherwise we have no years of data so set our average to None
             else:
