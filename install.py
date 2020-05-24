@@ -1,4 +1,8 @@
-"""install.py
+"""
+install.py
+
+Installer for the Averages extension for WeeWX.
+
 Copyright (c) 2015-2016 Gary Roderick <gjroderick(at)gmail.com>
 
 Released under GNU General Public License, Version 3, 29 June 2007.
@@ -9,14 +13,12 @@ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
 details.
 
-Installer for the WeeWX Averages extension.
 
-Version: 1.0.0a1                                   Date: 30 December 2019
+Version: 1.0.0                                     Date: 25 May 2020
 
 Revision History
-    30 December 2019
-        - removed code that used either report_timing or stale_age depending on
-          WeeWX version
+    25 May 2020         v1.0.0
+        - bumped version only
     30 September 2016   v0.5.0
         - initial implementation (bumped to v0.5.0 to align with supporting
           SLE version)
@@ -26,8 +28,7 @@ import weewx
 from distutils.version import StrictVersion
 from setup import ExtensionInstaller
 
-# TODO. Fix before release
-REQUIRED_VERSION = "4.0.0b5"
+REQUIRED_VERSION = "3.0.0"
 AFW_VERSION = "1.0.0"
 
 
@@ -42,8 +43,20 @@ class AveragesInstaller(ExtensionInstaller):
                                                                  REQUIRED_VERSION,
                                                                  weewx.__version__)
             raise weewx.UnsupportedFeature(msg)
+        # If our weewx version is >= 3.6.0 then we can use report_timing to
+        # control when the report is generated otherwise we can only use
+        # stale_age. Call weewx.require_weewx_version(); if no error use
+        # report_timing, if an error then catch it and use stale_age
+        try:
+            weewx.require_weewx_version('Averages', '3.6.0')
+            _timing = 'report_timing'
+            _timing_setting = '@monthly'
+        except weewx.UnsupportedFeature:
+            _timing = 'stale_age'
+            _timing_setting = '86400'
+
         super(AveragesInstaller, self).__init__(
-            version="1.0.0a1",
+            version="1.0.0",
             name='Averages',
             description='Highcharts plots of WeeWX monthly averages.',
             author="Gary Roderick",
@@ -52,7 +65,7 @@ class AveragesInstaller(ExtensionInstaller):
                 'StdReport': {
                     'HighchartsAverages': {
                         'skin': 'HighchartsAverages',
-                        'report_timing': '@monthly',
+                        _timing: _timing_setting,
                         'Units': {
                             'Groups': {
                                 'group_rain':        'mm',

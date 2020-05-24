@@ -18,10 +18,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see http://www.gnu.org/licenses/.
 
-Version: 1.0.0b1                                 Date: 19 April 2020
+Version: 1.0.0                                   Date: 25 May 2020
 
 Revision History
-    19 April 2020       v1.0.0
+    25 May 2020         v1.0.0
         - now WeeWX 3 and WeeWX 4 (python 2 or 3) compatible
         - renamed search list file and search list class
     30 September 2016   v0.5.0
@@ -115,7 +115,7 @@ def round_none(value, places):
     if value is not None:
         try:
             value = round(value, places)
-        except:
+        except TypeError:
             value = None
     return value
 
