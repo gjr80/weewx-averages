@@ -308,7 +308,7 @@ class MonthAverages(SearchList):
             # max temp
             # if the current value is greater than our max to date for this
             # month then we have a new max
-            if _temp_max_vt.value > m_temp_max_vt[0][_bin]:
+            if m_temp_max_vt[0][_bin] is None or _temp_max_vt.value > m_temp_max_vt[0][_bin]:
                 m_temp_max_vt[0][_bin] = _temp_max_vt.value
 
             # mean max temp
